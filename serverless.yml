@@ -1,0 +1,23 @@
+service: track
+custom: # add these two lines 
+  secrets: ${file(secrets.json)} # reference the secrets.json file
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: production
+  region: us-east-1
+  environment: # add environment property 
+    NODE_ENV: ${self:custom.secrets.NODE_ENV} 
+  memorySize: 128
+functions:
+  app:
+    handler: app/app.handler
+    events: 
+      - http: 
+          path: /
+          method: GET
+          cors: true
+      - http: 
+          path: /{proxy+}
+          method: GET
+          cors: true
